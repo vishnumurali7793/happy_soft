@@ -25,4 +25,20 @@ public class TransactionDao {
 		}
 	}
 
+	public ProductBean getProductById(ProductBean bean) {
+		SessionFactory sessionFactory = new Configuration().configure().buildSessionFactory();
+		Session session = sessionFactory.openSession();
+		session.beginTransaction();
+		try {
+			return (ProductBean) session.createQuery("from ProductBean where productId=:productId")
+					.setParameter("productId", bean.getProductId())
+					.uniqueResult();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+
+	}
+
 }

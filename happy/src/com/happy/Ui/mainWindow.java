@@ -92,6 +92,7 @@ public class mainWindow extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				Sales sales = new Sales();
 				sales.setVisible(true);
+				sales.setLocationRelativeTo(null);
 			}
 		});
 		mnTransaction.add(mntmSales);
