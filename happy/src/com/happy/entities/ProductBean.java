@@ -6,6 +6,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 @Entity
 @Table(schema="happy", name="product")
@@ -26,6 +27,9 @@ public class ProductBean {
 	
 	@Column(name="sell_price")
 	private Double sellingPrice;
+	
+	@Column(name="delete_status")
+	private String deleteStatus="N";
 	
 	public Integer getProductId() {
 		return productId;
@@ -65,6 +69,14 @@ public class ProductBean {
 
 	public void setSellingPrice(Double sellingPrice) {
 		this.sellingPrice = sellingPrice;
+	}
+
+	public String getDeleteStatus() {
+		return deleteStatus;
+	}
+
+	public void setDeleteStatus(String deleteStatus) {
+		this.deleteStatus = deleteStatus;
 	}
 	
 }
