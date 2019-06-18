@@ -1,11 +1,13 @@
 package com.happy.dao;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 
+import com.happy.entities.AccountHeadBean;
 import com.happy.entities.ProductBean;
 
 public class TransactionDao {
@@ -31,14 +33,60 @@ public class TransactionDao {
 		session.beginTransaction();
 		try {
 			return (ProductBean) session.createQuery("from ProductBean where productId=:productId")
-					.setParameter("productId", bean.getProductId())
-					.uniqueResult();
+					.setParameter("productId", bean.getProductId()).uniqueResult();
 
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
+		} finally {
+			session.close();
 		}
 
+	}
+
+	@SuppressWarnings("unchecked")
+	public ArrayList<AccountHeadBean> getAccountHeads() {
+		SessionFactory sessionFactory = new Configuration().configure().buildSessionFactory();
+		Session session = sessionFactory.openSession();
+		session.beginTransaction();
+		try {
+			return (ArrayList<AccountHeadBean>) session.createQuery("from AccountHeadBean").getResultList();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+
+		} finally {
+			session.close();
+		}
+
+	}
+
+	public AccountHeadBean getHeadById(int headId) {
+		SessionFactory sessionFactory = new Configuration().configure().buildSessionFactory();
+		Session session = sessionFactory.openSession();
+		session.beginTransaction();
+		try {
+			return (AccountHeadBean) session.createQuery("from AccountHeadBean where headId=:headId")
+					.setParameter("headId", headId).uniqueResult();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	public int getSalesCount() {
+		SessionFactory sessionFactory = new Configuration().configure().buildSessionFactory();
+		Session session = sessionFactory.openSession();
+		session.beginTransaction();
+		try {
+			return (int) session.createSQLQuery("SELECT count(bill_id) FROM sales").uniqueResult();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return 0;
+		} finally {
+			session.close();
+		}
 	}
 
 }
