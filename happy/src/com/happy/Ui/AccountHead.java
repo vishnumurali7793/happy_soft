@@ -177,6 +177,11 @@ public class AccountHead extends JFrame {
 						head.setHeadAddress(txtAddress.getText());
 						head.setHeadPanNo(txtPan.getText());
 						head.setHeadGstin(txtGstin.getText());
+						char[] nameCode = txtAccName.getText().toUpperCase().toCharArray();
+						char[] phoneCode = txtAccPhone.getText().toUpperCase().toCharArray();
+						String headCode = "AH" + nameCode[0] + nameCode[1] + nameCode[3] + phoneCode[6] + phoneCode[7]
+										+ phoneCode[8] + phoneCode[9];
+						head.setHeadCode(headCode);
 
 						status = masterAction.saveAccountHead(head);
 					}

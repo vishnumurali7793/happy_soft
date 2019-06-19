@@ -14,7 +14,9 @@ import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
 import com.happy.action.TransactionAction;
+import com.happy.entities.AccountHeadBean;
 import com.happy.entities.ProductBean;
+import com.happy.entities.SalesBean;
 import com.toedter.calendar.JDateChooser;
 import javax.swing.border.LineBorder;
 import java.awt.Color;
@@ -49,16 +51,21 @@ public class Sales extends JFrame {
 	private JTextField textDiscount;
 	private List<ProductBean> list = new ArrayList<>();
 	private JTable table;
-	JLabel lblNetAmt;
+	private JLabel lblNetAmt;
+	private JRadioButton rdbtnEnableDiscount;
 
 	private String custName;
 	private String custAddress;
 	private String custPhone;
+	private String custHeadCode;
 
-	TransactionAction transactionAction = new TransactionAction();
-	ProductBean productBean;
+	private TransactionAction transactionAction = new TransactionAction();
+	private ProductBean productBean;
+	private SalesBean salesBean;
+	private AccountHeadBean accountBean;
 
 	private double subTotal;
+	private JTextField textHeadCode;
 
 	/**
 	 * Launch the application.
@@ -147,21 +154,11 @@ public class Sales extends JFrame {
 		panel_1.add(dateBill);
 
 		JLabel lblCustomerName = new JLabel("Customer name");
-		lblCustomerName.setBounds(325, 42, 124, 15);
+		lblCustomerName.setBounds(325, 70, 124, 15);
 		panel_1.add(lblCustomerName);
 
 		textCustomerName = new JTextField();
-		textCustomerName.addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyPressed(KeyEvent e) {
-				if (e.getKeyCode() == KeyEvent.VK_F1) {
-					AccountHeadSelection ahs = new AccountHeadSelection();
-					ahs.setVisible(true);
-					dispose();
-				}
-			}
-		});
-		textCustomerName.setBounds(460, 40, 217, 19);
+		textCustomerName.setBounds(460, 66, 217, 19);
 		panel_1.add(textCustomerName);
 		textCustomerName.setColumns(10);
 
@@ -175,15 +172,15 @@ public class Sales extends JFrame {
 		textAddress.setColumns(10);
 
 		JLabel lblCustomerPhone = new JLabel("Customer phone");
-		lblCustomerPhone.setBounds(739, 42, 124, 15);
+		lblCustomerPhone.setBounds(739, 26, 124, 15);
 		panel_1.add(lblCustomerPhone);
 
 		textPhone = new JTextField();
-		textPhone.setBounds(881, 40, 161, 19);
+		textPhone.setBounds(881, 24, 161, 19);
 		panel_1.add(textPhone);
 		textPhone.setColumns(10);
 
-		JRadioButton rdbtnEnableDiscount = new JRadioButton("Enable Discount");
+		rdbtnEnableDiscount = new JRadioButton("Enable Discount");
 		rdbtnEnableDiscount.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
 				if (e.getStateChange() == ItemEvent.SELECTED) {
@@ -193,7 +190,7 @@ public class Sales extends JFrame {
 				}
 			}
 		});
-		rdbtnEnableDiscount.setBounds(739, 107, 144, 23);
+		rdbtnEnableDiscount.setBounds(739, 66, 144, 23);
 		panel_1.add(rdbtnEnableDiscount);
 
 		JPanel panel_2 = new JPanel();
@@ -226,12 +223,49 @@ public class Sales extends JFrame {
 		panel_2.add(lblDiscount);
 
 		textDiscount = new JTextField();
+		textDiscount.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if(e.getKeyCode()==KeyEvent.VK_ENTER) {
+					subTotal -= Double.parseDouble(textDiscount.getText());
+					lblNetAmt.setText(String.valueOf(subTotal));
+				}
+			}
+		});
 		textDiscount.setBounds(908, 49, 124, 19);
 		textDiscount.setEditable(false);
 		panel_2.add(textDiscount);
 		textDiscount.setColumns(10);
 
 		JButton btnSave = new JButton("Save");
+		btnSave.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				salesBean = new SalesBean();
+				accountBean = transactionAction.getHeadsByHeadCode(textHeadCode.getText().toString());
+				String [] billId = txtBillNo.getText().split("/");
+				salesBean.setBillId(Integer.parseInt(billId[1]));
+				salesBean.setAccountBean(new AccountHeadBean());
+				salesBean.getAccountBean().setHeadId(accountBean.getHeadId());
+				salesBean.setBillDate(dateBill.getDate());
+				if(rdbtnEnableDiscount.isSelected()) {
+					salesBean.setDiscountEnabled("Y");
+					salesBean.setDiscount(Double.parseDouble(textDiscount.getText()));
+				}else {
+					salesBean.setDiscountEnabled("N");
+				}
+				salesBean.setTotalBeforeDiscount(Double.parseDouble(textSubTotal.getText()));
+				salesBean.setNetAmount(Double.parseDouble(lblNetAmt.getText()));
+				String status = transactionAction.saveSalesBill(salesBean);
+				if(status.equals("success")) {
+					JOptionPane.showMessageDialog(null, "Bill saved");
+				}else if(status.equals("failed")) {
+					JOptionPane.showMessageDialog(null, "Bill not saved successfully");
+				}else if(status.equals(null)) {
+					JOptionPane.showMessageDialog(null, "Some error occured");
+				}
+				
+			}
+		});
 		btnSave.setBounds(736, 634, 114, 25);
 		panel.add(btnSave);
 
@@ -280,6 +314,25 @@ public class Sales extends JFrame {
 		scrollPaneSelectFrom.setViewportView(table);
 		getProductList();
 		dateBill.setDate(new Date());
+		
+		JLabel lblCustomerHeadCode = new JLabel("Customer head code");
+		lblCustomerHeadCode.setBounds(325, 26, 144, 15);
+		panel_1.add(lblCustomerHeadCode);
+		
+		textHeadCode = new JTextField();
+		textHeadCode.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if (e.getKeyCode() == KeyEvent.VK_F1) {
+					AccountHeadSelection ahs = new AccountHeadSelection();
+					ahs.setVisible(true);
+					dispose();
+				}
+			}
+		});
+		textHeadCode.setBounds(487, 24, 190, 19);
+		panel_1.add(textHeadCode);
+		textHeadCode.setColumns(10);
 		setBillNo();
 	}
 
@@ -313,15 +366,16 @@ public class Sales extends JFrame {
 	}
 
 	public void setSubTotal(double itemTotal) {
-		subTotal += itemTotal;
-		textSubTotal.setText(String.valueOf(subTotal));
-		lblNetAmt.setText(String.valueOf(subTotal));
+			subTotal += itemTotal;
+			textSubTotal.setText(String.valueOf(subTotal));
+			lblNetAmt.setText(String.valueOf(subTotal));	
 	}
 
 	public void refresh() {
 		textCustomerName.setText(custName);
 		textPhone.setText(custPhone);
 		textAddress.setText(custAddress);
+		textHeadCode.setText(custHeadCode);
 
 	}
 
@@ -356,5 +410,13 @@ public class Sales extends JFrame {
 
 	public void setCustPhone(String custPhone) {
 		this.custPhone = custPhone;
+	}
+
+	public String getCustHeadCode() {
+		return custHeadCode;
+	}
+
+	public void setCustHeadCode(String custHeadCode) {
+		this.custHeadCode = custHeadCode;
 	}
 }

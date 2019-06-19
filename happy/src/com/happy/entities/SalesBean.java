@@ -7,6 +7,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Entity
@@ -21,7 +23,8 @@ public class SalesBean {
 	@Column(name="bill_date")
 	private Date billDate;
 	
-	@Column(name="customer_id")
+	@ManyToOne
+	@JoinColumn(name="customer_id")
 	private AccountHeadBean accountBean;
 	
 	@Column(name="discount_enabled")
@@ -30,11 +33,22 @@ public class SalesBean {
 	@Column(name="discount")
 	private Double discount;
 	
-	@Column(name="total_amt_before_discount")
+	@Column(name="sub_total")
 	private Double totalBeforeDiscount;
 	
 	@Column(name="net_amount")
 	private Double netAmount;
+	
+	@Column(name="delete_status")
+	private String deleteStatus="N";
+
+	public String getDeleteStatus() {
+		return deleteStatus;
+	}
+
+	public void setDeleteStatus(String deleteStatus) {
+		this.deleteStatus = deleteStatus;
+	}
 
 	public Integer getBillId() {
 		return billId;

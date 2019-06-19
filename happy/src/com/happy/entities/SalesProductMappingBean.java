@@ -27,10 +27,10 @@ public class SalesProductMappingBean {
 	private ProductBean product;
 	
 	@Column(name="quantity")
-	private Double quantity;
+	private SalesBean quantity;
 	
 	@Column(name="total")
-	private Double productTotalAmt;
+	private SalesBean productTotalAmt;
 
 	public Integer getMappingId() {
 		return mappingId;
@@ -56,19 +56,19 @@ public class SalesProductMappingBean {
 		this.product = product;
 	}
 
-	public Double getQuantity() {
+	public SalesBean getQuantity() {
 		return quantity;
 	}
 
-	public void setQuantity(Double quantity) {
+	public void setQuantity(SalesBean quantity) {
 		this.quantity = quantity;
 	}
 
-	public Double getProductTotalAmt() {
+	public SalesBean getProductTotalAmt() {
 		return productTotalAmt;
 	}
 
-	public void setProductTotalAmt(Double productTotalAmt) {
+	public void setProductTotalAmt(SalesBean productTotalAmt) {
 		this.productTotalAmt = productTotalAmt;
 	}
 

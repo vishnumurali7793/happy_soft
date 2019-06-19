@@ -15,6 +15,9 @@ public class AccountHeadBean {
 	@Column(name = "head_id")
 	private Integer headId;
 	
+	@Column(name="head_code")
+	private String headCode;
+	
 	@Column(name="head_name")
 	private String headName;
 	
@@ -109,6 +112,14 @@ public class AccountHeadBean {
 
 	public void setHeadType(String headType) {
 		this.headType = headType;
+	}
+
+	public String getHeadCode() {
+		return headCode;
+	}
+
+	public void setHeadCode(String headCode) {
+		this.headCode = headCode;
 	}
 
 }

@@ -1,5 +1,6 @@
 package com.happy.dao;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,6 +10,7 @@ import org.hibernate.cfg.Configuration;
 
 import com.happy.entities.AccountHeadBean;
 import com.happy.entities.ProductBean;
+import com.happy.entities.SalesBean;
 
 public class TransactionDao {
 
@@ -80,13 +82,44 @@ public class TransactionDao {
 		Session session = sessionFactory.openSession();
 		session.beginTransaction();
 		try {
-			return (int) session.createSQLQuery("SELECT count(bill_id) FROM sales").uniqueResult();
+			return (Integer) session.createSQLQuery("SELECT count(bill_id) FROM sales").uniqueResult();
 		} catch (Exception e) {
 			e.printStackTrace();
 			return 0;
 		} finally {
 			session.close();
 		}
+	}
+
+	public AccountHeadBean getHeadsByHeadCode(String accountBean) {
+		SessionFactory sessionFactory = new Configuration().configure().buildSessionFactory();
+		Session session = sessionFactory.openSession();
+		session.beginTransaction();
+		try {
+			return (AccountHeadBean)session.createQuery("from AccountHeadBean where headCode=:headCode")
+					.setParameter("headCode", accountBean).uniqueResult();
+		}catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}finally {
+			session.close();
+		}
+
+	}
+
+	public int saveSalesBill(SalesBean salesBean) {
+		SessionFactory sessionFactory = new Configuration().configure().buildSessionFactory();
+		Session session = sessionFactory.openSession();
+		session.beginTransaction();
+		try {
+			return (int) session.save(salesBean);
+		}catch(Exception e){
+			e.printStackTrace();
+			return 0;
+		}finally {
+			session.close();
+		}
+		
 	}
 
 }
