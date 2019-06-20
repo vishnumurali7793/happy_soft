@@ -11,6 +11,7 @@ import org.hibernate.cfg.Configuration;
 import com.happy.entities.AccountHeadBean;
 import com.happy.entities.ProductBean;
 import com.happy.entities.SalesBean;
+import com.happy.entities.SalesProductMappingBean;
 
 public class TransactionDao {
 
@@ -120,6 +121,33 @@ public class TransactionDao {
 			session.close();
 		}
 		
+	}
+
+	public int getProductIdByCode(String itemCode) {
+		SessionFactory sessionFactory = new Configuration().configure().buildSessionFactory();
+		Session session = sessionFactory.openSession();
+		session.beginTransaction();
+		try {
+			return (int)session.createQuery("select productId from ProductBean where productCode=:productCode")
+			.setParameter("productCode", itemCode).uniqueResult();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return 0;
+		}finally {
+			session.close();
+		}
+	}
+
+	public int saveSalesProductMapping(SalesProductMappingBean spMappingBean) {
+		SessionFactory sessionFactory = new Configuration().configure().buildSessionFactory();
+		Session session = sessionFactory.openSession();
+		session.beginTransaction();
+		try {
+			return (int)session.save(spMappingBean);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return 0;
+		}
 	}
 
 }

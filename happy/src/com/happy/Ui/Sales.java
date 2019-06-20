@@ -17,6 +17,7 @@ import com.happy.action.TransactionAction;
 import com.happy.entities.AccountHeadBean;
 import com.happy.entities.ProductBean;
 import com.happy.entities.SalesBean;
+import com.happy.entities.SalesProductMappingBean;
 import com.toedter.calendar.JDateChooser;
 import javax.swing.border.LineBorder;
 import java.awt.Color;
@@ -63,6 +64,7 @@ public class Sales extends JFrame {
 	private ProductBean productBean;
 	private SalesBean salesBean;
 	private AccountHeadBean accountBean;
+	private SalesProductMappingBean spMappingBean;
 
 	private double subTotal;
 	private JTextField textHeadCode;
@@ -109,11 +111,11 @@ public class Sales extends JFrame {
 			public void keyPressed(KeyEvent e) {
 				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
 					int row = table_1.getSelectedRow();
-					double quantity = Double.parseDouble(table_1.getValueAt(row, 3).toString());
-					double price = Double.parseDouble(table_1.getValueAt(row, 2).toString());
+					double quantity = Double.parseDouble(table_1.getValueAt(row, 4).toString());
+					double price = Double.parseDouble(table_1.getValueAt(row, 3).toString());
 					double itemTotal = transactionAction.calculateTotal(quantity, price);
 					if (itemTotal != 0) {
-						table_1.setValueAt(itemTotal, row, 4);
+						table_1.setValueAt(itemTotal, row, 5);
 						setSubTotal(itemTotal);
 					} else {
 						JOptionPane.showMessageDialog(null, "Invalid quantity");
@@ -123,11 +125,11 @@ public class Sales extends JFrame {
 		});
 		table_1.setShowGrid(false);
 		table_1.setModel(new DefaultTableModel(new Object[][] {},
-				new String[] { "Item name", "Selling unit", "Unit price", "Quantity", "Total" }));
-		table_1.getColumnModel().getColumn(0).setPreferredWidth(297);
-		table_1.getColumnModel().getColumn(1).setPreferredWidth(117);
-		table_1.getColumnModel().getColumn(2).setPreferredWidth(116);
-		table_1.getColumnModel().getColumn(3).setPreferredWidth(93);
+				new String[] { "Item code", "Item name", "Selling unit", "Unit price", "Quantity", "Total" }));
+		table_1.getColumnModel().getColumn(1).setPreferredWidth(235);
+		table_1.getColumnModel().getColumn(2).setPreferredWidth(117);
+		table_1.getColumnModel().getColumn(3).setPreferredWidth(101);
+		table_1.getColumnModel().getColumn(4).setPreferredWidth(93);
 		scrollPane.setViewportView(table_1);
 
 		JPanel panel_1 = new JPanel();
@@ -226,7 +228,7 @@ public class Sales extends JFrame {
 		textDiscount.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
-				if(e.getKeyCode()==KeyEvent.VK_ENTER) {
+				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
 					subTotal -= Double.parseDouble(textDiscount.getText());
 					lblNetAmt.setText(String.valueOf(subTotal));
 				}
@@ -241,29 +243,60 @@ public class Sales extends JFrame {
 		btnSave.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				salesBean = new SalesBean();
+				spMappingBean = new SalesProductMappingBean();
+
 				accountBean = transactionAction.getHeadsByHeadCode(textHeadCode.getText().toString());
-				String [] billId = txtBillNo.getText().split("/");
+				String[] billId = txtBillNo.getText().split("/");
 				salesBean.setBillId(Integer.parseInt(billId[1]));
 				salesBean.setAccountBean(new AccountHeadBean());
 				salesBean.getAccountBean().setHeadId(accountBean.getHeadId());
 				salesBean.setBillDate(dateBill.getDate());
-				if(rdbtnEnableDiscount.isSelected()) {
+				if (rdbtnEnableDiscount.isSelected()) {
 					salesBean.setDiscountEnabled("Y");
 					salesBean.setDiscount(Double.parseDouble(textDiscount.getText()));
-				}else {
+				} else {
 					salesBean.setDiscountEnabled("N");
 				}
 				salesBean.setTotalBeforeDiscount(Double.parseDouble(textSubTotal.getText()));
 				salesBean.setNetAmount(Double.parseDouble(lblNetAmt.getText()));
-				String status = transactionAction.saveSalesBill(salesBean);
-				if(status.equals("success")) {
-					JOptionPane.showMessageDialog(null, "Bill saved");
-				}else if(status.equals("failed")) {
-					JOptionPane.showMessageDialog(null, "Bill not saved successfully");
-				}else if(status.equals(null)) {
+
+				DefaultTableModel model = (DefaultTableModel) table_1.getModel();
+				String itemCode = null;
+				double quantity = 0.0;
+				double itemWiseTotal = 0.0;
+				String mapStatus = null;
+				for (int i = 0; i < model.getRowCount(); i++) {
+					itemCode = (String) model.getValueAt(i, 0);
+					quantity = Double.parseDouble(String.valueOf(model.getValueAt(i, 4)));
+					itemWiseTotal = Double.parseDouble(String.valueOf(model.getValueAt(i, 5)));
+					spMappingBean.setSalesBillId(new SalesBean());
+					spMappingBean.getSalesBillId().setBillId(salesBean.getBillId());
+					productBean.setProductId(transactionAction.getProductIdByCode(itemCode));
+					spMappingBean.setProductId(productBean);
+					spMappingBean.setProductTotalAmt(itemWiseTotal);
+					spMappingBean.setQuantity(quantity);
+					System.out.println(spMappingBean.getDeleteStatus());
+					System.out.println(spMappingBean.getMappingId());
+					System.out.println(spMappingBean.getProductId());
+					System.out.println(spMappingBean.getProductTotalAmt());
+					System.out.println(spMappingBean.getQuantity());
+					System.out.println(spMappingBean.getSalesBillId());
+					mapStatus = transactionAction.saveSalesProductMapping(spMappingBean);
+					
+				}
+				if (mapStatus.equals("success")) {
+					String status = transactionAction.saveSalesBill(salesBean);
+					if (status.equals("success")) {
+						JOptionPane.showMessageDialog(null, "Bill saved");
+					} else if (status.equals("failed")) {
+						JOptionPane.showMessageDialog(null, "Bill not saved successfully");
+					} else if (status.equals(null)) {
+						JOptionPane.showMessageDialog(null, "Some error occured");
+					}
+				} else {
 					JOptionPane.showMessageDialog(null, "Some error occured");
 				}
-				
+
 			}
 		});
 		btnSave.setBounds(736, 634, 114, 25);
@@ -297,8 +330,7 @@ public class Sales extends JFrame {
 			public void keyPressed(KeyEvent e) {
 				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
 					int row = table.getSelectedRow();
-					int column = table.getSelectedColumn();
-					int value = (int) table.getValueAt(row, column);
+					int value = (int) table.getValueAt(row, 0);
 					productBean = new ProductBean();
 					productBean.setProductId(value);
 					productBean = transactionAction.getProductById(productBean);
@@ -314,11 +346,11 @@ public class Sales extends JFrame {
 		scrollPaneSelectFrom.setViewportView(table);
 		getProductList();
 		dateBill.setDate(new Date());
-		
+
 		JLabel lblCustomerHeadCode = new JLabel("Customer head code");
 		lblCustomerHeadCode.setBounds(325, 26, 144, 15);
 		panel_1.add(lblCustomerHeadCode);
-		
+
 		textHeadCode = new JTextField();
 		textHeadCode.addKeyListener(new KeyAdapter() {
 			@Override
@@ -337,15 +369,16 @@ public class Sales extends JFrame {
 	}
 
 	public void addproducts(ProductBean productBean) {
-		String name, unit, quantity;
+		String name, unit, quantity, code;
 		Double unitPrice, totalPrice;
+		code = productBean.getProductCode();
 		name = productBean.getProductName();
 		unit = productBean.getSellingUnit();
 		quantity = "";
 		unitPrice = productBean.getSellingPrice();
 		totalPrice = 0.0;
 		DefaultTableModel model = (DefaultTableModel) table_1.getModel();
-		model.addRow(new Object[] { name, unit, unitPrice, quantity, totalPrice });
+		model.addRow(new Object[] { code, name, unit, unitPrice, quantity, totalPrice });
 		new Sales();
 	}
 
@@ -366,9 +399,9 @@ public class Sales extends JFrame {
 	}
 
 	public void setSubTotal(double itemTotal) {
-			subTotal += itemTotal;
-			textSubTotal.setText(String.valueOf(subTotal));
-			lblNetAmt.setText(String.valueOf(subTotal));	
+		subTotal += itemTotal;
+		textSubTotal.setText(String.valueOf(subTotal));
+		lblNetAmt.setText(String.valueOf(subTotal));
 	}
 
 	public void refresh() {
@@ -418,5 +451,13 @@ public class Sales extends JFrame {
 
 	public void setCustHeadCode(String custHeadCode) {
 		this.custHeadCode = custHeadCode;
+	}
+
+	public ProductBean getProductBean() {
+		return productBean;
+	}
+
+	public void setProductBean(ProductBean productBean) {
+		this.productBean = productBean;
 	}
 }

@@ -5,6 +5,7 @@ import com.happy.dao.TransactionDao;
 import com.happy.entities.AccountHeadBean;
 import com.happy.entities.ProductBean;
 import com.happy.entities.SalesBean;
+import com.happy.entities.SalesProductMappingBean;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -68,6 +69,21 @@ public class TransactionAction {
 
 	public String saveSalesBill(SalesBean salesBean) {
 		int status = transactionDao.saveSalesBill(salesBean);
+		if (status > 0) {
+			return SUCCESS;
+		} else if (status <= 0) {
+			return FAILED;
+		}
+		return null;
+
+	}
+
+	public int getProductIdByCode(String itemCode) {
+		return transactionDao.getProductIdByCode(itemCode);
+	}
+
+	public String saveSalesProductMapping(SalesProductMappingBean spMappingBean) {
+		int status = transactionDao.saveSalesProductMapping(spMappingBean);
 		if (status > 0) {
 			return SUCCESS;
 		} else if (status <= 0) {
