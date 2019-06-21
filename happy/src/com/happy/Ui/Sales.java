@@ -244,6 +244,7 @@ public class Sales extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				salesBean = new SalesBean();
 				spMappingBean = new SalesProductMappingBean();
+				String status=null;
 
 				accountBean = transactionAction.getHeadsByHeadCode(textHeadCode.getText().toString());
 				String[] billId = txtBillNo.getText().split("/");
@@ -259,6 +260,7 @@ public class Sales extends JFrame {
 				}
 				salesBean.setTotalBeforeDiscount(Double.parseDouble(textSubTotal.getText()));
 				salesBean.setNetAmount(Double.parseDouble(lblNetAmt.getText()));
+				status = transactionAction.saveSalesBill(salesBean);
 
 				DefaultTableModel model = (DefaultTableModel) table_1.getModel();
 				String itemCode = null;
@@ -282,10 +284,10 @@ public class Sales extends JFrame {
 					System.out.println(spMappingBean.getQuantity());
 					System.out.println(spMappingBean.getSalesBillId());
 					mapStatus = transactionAction.saveSalesProductMapping(spMappingBean);
-					
 				}
+				transactionAction.generateSalesBill(salesBean, spMappingBean);
 				if (mapStatus.equals("success")) {
-					String status = transactionAction.saveSalesBill(salesBean);
+					
 					if (status.equals("success")) {
 						JOptionPane.showMessageDialog(null, "Bill saved");
 					} else if (status.equals("failed")) {
@@ -365,6 +367,16 @@ public class Sales extends JFrame {
 		textHeadCode.setBounds(487, 24, 190, 19);
 		panel_1.add(textHeadCode);
 		textHeadCode.setColumns(10);
+		
+		JButton btnGenerateBill = new JButton("Generate Bill");
+		btnGenerateBill.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				//transactionAction.generateSalesBill();
+				JOptionPane.showMessageDialog(null, "Bill generated");
+			}
+		});
+		btnGenerateBill.setBounds(580, 634, 144, 25);
+		panel.add(btnGenerateBill);
 		setBillNo();
 	}
 

@@ -83,7 +83,7 @@ public class TransactionDao {
 		Session session = sessionFactory.openSession();
 		session.beginTransaction();
 		try {
-			return (Integer) session.createSQLQuery("SELECT count(bill_id) FROM sales").uniqueResult();
+			return ((BigInteger) session.createSQLQuery("SELECT count(*) FROM sales").uniqueResult()).intValue();
 		} catch (Exception e) {
 			e.printStackTrace();
 			return 0;
@@ -97,12 +97,12 @@ public class TransactionDao {
 		Session session = sessionFactory.openSession();
 		session.beginTransaction();
 		try {
-			return (AccountHeadBean)session.createQuery("from AccountHeadBean where headCode=:headCode")
+			return (AccountHeadBean) session.createQuery("from AccountHeadBean where headCode=:headCode")
 					.setParameter("headCode", accountBean).uniqueResult();
-		}catch (Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
-		}finally {
+		} finally {
 			session.close();
 		}
 
@@ -114,13 +114,13 @@ public class TransactionDao {
 		session.beginTransaction();
 		try {
 			return (int) session.save(salesBean);
-		}catch(Exception e){
+		} catch (Exception e) {
 			e.printStackTrace();
 			return 0;
-		}finally {
+		} finally {
 			session.close();
 		}
-		
+
 	}
 
 	public int getProductIdByCode(String itemCode) {
@@ -128,12 +128,12 @@ public class TransactionDao {
 		Session session = sessionFactory.openSession();
 		session.beginTransaction();
 		try {
-			return (int)session.createQuery("select productId from ProductBean where productCode=:productCode")
-			.setParameter("productCode", itemCode).uniqueResult();
+			return (int) session.createQuery("select productId from ProductBean where productCode=:productCode")
+					.setParameter("productCode", itemCode).uniqueResult();
 		} catch (Exception e) {
 			e.printStackTrace();
 			return 0;
-		}finally {
+		} finally {
 			session.close();
 		}
 	}
@@ -143,11 +143,44 @@ public class TransactionDao {
 		Session session = sessionFactory.openSession();
 		session.beginTransaction();
 		try {
-			return (int)session.save(spMappingBean);
+			return (int) session.save(spMappingBean);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return 0;
+		} finally {
+			session.close();
 		}
 	}
+
+	public AccountHeadBean getHeadDetails(Integer headId) {
+		SessionFactory sessionFactory = new Configuration().configure().buildSessionFactory();
+		Session session = sessionFactory.openSession();
+		session.beginTransaction();
+		try {
+			return (AccountHeadBean) session.createQuery("from AccountHeadBean where headId=:headId")
+					.setParameter("headId", headId).uniqueResult();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		} finally {
+			session.close();
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<SalesProductMappingBean> getSalesItemList(SalesProductMappingBean mapBean) {
+		SessionFactory sessionFactory = new Configuration().configure().buildSessionFactory();
+		Session session = sessionFactory.openSession();
+		session.beginTransaction();
+		try {
+			return session.createQuery("from SalesProductMappingBean where salesBillId=:billId")
+			.setParameter("billId", mapBean.getSalesBillId()).list();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+
 
 }
