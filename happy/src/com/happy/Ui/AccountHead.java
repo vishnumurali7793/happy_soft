@@ -24,6 +24,10 @@ import java.awt.event.ActionEvent;
 
 public class AccountHead extends JFrame {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
 	private JTextField txtAccName;
 	private JTextField txtAccPhone;
@@ -55,6 +59,7 @@ public class AccountHead extends JFrame {
 	/**
 	 * Create the frame.
 	 */
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public AccountHead() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 876, 565);
