@@ -43,6 +43,9 @@ public class SalesBean {
 	
 	@Column(name="delete_status")
 	private String deleteStatus="N";
+	
+	@Column(name="payment_type")
+	private String paymentType;
 
 	public String getDeleteStatus() {
 		return deleteStatus;
@@ -106,6 +109,14 @@ public class SalesBean {
 
 	public void setNetAmount(Double netAmount) {
 		this.netAmount = netAmount;
+	}
+
+	public String getPaymentType() {
+		return paymentType;
+	}
+
+	public void setPaymentType(String paymentType) {
+		this.paymentType = paymentType;
 	}
 
 }

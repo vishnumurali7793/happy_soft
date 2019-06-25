@@ -35,6 +35,8 @@ import java.util.List;
 import javax.swing.UIManager;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import javax.swing.JComboBox;
+import javax.swing.DefaultComboBoxModel;
 
 public class Sales extends JFrame {
 
@@ -54,6 +56,7 @@ public class Sales extends JFrame {
 	private JTable table;
 	private JLabel lblNetAmt;
 	private JRadioButton rdbtnEnableDiscount;
+	private JComboBox comboPaymentType;
 
 	private String custName;
 	private String custAddress;
@@ -88,6 +91,7 @@ public class Sales extends JFrame {
 	/**
 	 * Create the frame.
 	 */
+	@SuppressWarnings("unchecked")
 	public Sales() {
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 1102, 731);
@@ -244,7 +248,7 @@ public class Sales extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				salesBean = new SalesBean();
 				spMappingBean = new SalesProductMappingBean();
-				String status=null;
+				String status = null;
 
 				accountBean = transactionAction.getHeadsByHeadCode(textHeadCode.getText().toString());
 				String[] billId = txtBillNo.getText().split("/");
@@ -258,6 +262,7 @@ public class Sales extends JFrame {
 				} else {
 					salesBean.setDiscountEnabled("N");
 				}
+				salesBean.setPaymentType(comboPaymentType.getSelectedItem().toString().toLowerCase());
 				salesBean.setTotalBeforeDiscount(Double.parseDouble(textSubTotal.getText()));
 				salesBean.setNetAmount(Double.parseDouble(lblNetAmt.getText()));
 				status = transactionAction.saveSalesBill(salesBean);
@@ -287,7 +292,7 @@ public class Sales extends JFrame {
 				}
 				transactionAction.generateSalesBill(salesBean, spMappingBean);
 				if (mapStatus.equals("success")) {
-					
+
 					if (status.equals("success")) {
 						JOptionPane.showMessageDialog(null, "Bill saved");
 					} else if (status.equals("failed")) {
@@ -368,10 +373,19 @@ public class Sales extends JFrame {
 		panel_1.add(textHeadCode);
 		textHeadCode.setColumns(10);
 		
+		JLabel lblPaymentType = new JLabel("Payment type");
+		lblPaymentType.setBounds(746, 109, 96, 15);
+		panel_1.add(lblPaymentType);
+		
+		comboPaymentType = new JComboBox();
+		comboPaymentType.setModel(new DefaultComboBoxModel(new String[] {"", "Cash", "Credit"}));
+		comboPaymentType.setBounds(881, 100, 107, 24);
+		panel_1.add(comboPaymentType);
+
 		JButton btnGenerateBill = new JButton("Generate Bill");
 		btnGenerateBill.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				//transactionAction.generateSalesBill();
+				// transactionAction.generateSalesBill();
 				JOptionPane.showMessageDialog(null, "Bill generated");
 			}
 		});

@@ -6,7 +6,6 @@ import com.happy.entities.AccountHeadBean;
 import com.happy.entities.ProductBean;
 import com.happy.entities.SalesBean;
 import com.happy.entities.SalesProductMappingBean;
-import com.itextpdf.awt.geom.Rectangle;
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Chunk;
 import com.itextpdf.text.Document;
@@ -16,10 +15,15 @@ import com.itextpdf.text.Font.FontFamily;
 import com.itextpdf.text.PageSize;
 import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.Phrase;
+import com.itextpdf.text.pdf.PdfContentByte;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
+
+import java.awt.Desktop;
+import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JOptionPane;
@@ -111,20 +115,38 @@ public class TransactionAction {
 		headBean = transactionDao.getHeadDetails(salesBean.getAccountBean().getHeadId());
 		salesProductsList = transactionDao.getSalesItemList(mapBean);
 
-		final BaseColor tableHeadGrey = new BaseColor(212, 214, 216);
 		try {
 			Document document = new Document(PageSize.A4);
-			PdfWriter.getInstance(document, new FileOutputStream("bill.pdf"));
+			PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream("bill.pdf"));
 			PdfPTable pdfpTable;
 			Chunk chunk;
 			String temp;
 			Paragraph paragraph;
-			Phrase phrase;
 			PdfPCell cell;
+			PdfContentByte cb;
 
 			document.open();
 			document.addTitle("Sales");
 			document.setMargins(5, 5, 5, 5);
+
+			paragraph = new Paragraph();
+			if (salesBean.getPaymentType().equals("cash")) {
+				temp = "Cash";
+			} else if (salesBean.getPaymentType().equals("credit")) {
+				temp = "Credit";
+			} else {
+				temp = "";
+			}
+			paragraph.add(new Chunk(temp + " Bill", new Font(FontFamily.HELVETICA, 8, Font.BOLDITALIC)));
+			paragraph.setAlignment(Element.ALIGN_RIGHT);
+			paragraph.setSpacingAfter(10);
+			document.add(paragraph);
+
+			paragraph.add(new Chunk("Generated on: " + salesBean.getBillDate().toString(),
+					new Font(FontFamily.HELVETICA, 8, Font.ITALIC)));
+			paragraph.setAlignment(Element.ALIGN_RIGHT);
+			paragraph.setSpacingAfter(10);
+			document.add(paragraph);
 
 			paragraph = new Paragraph();
 			temp = "Happy Food Products";
@@ -176,52 +198,51 @@ public class TransactionAction {
 			document.add(paragraph);
 
 			pdfpTable = new PdfPTable(5);
-			pdfpTable.setWidths(new int[] { 10, 30, 20, 20, 20 });
+			pdfpTable.setWidths(new int[] { 5, 65, 10, 10, 10 });
 			pdfpTable.setWidthPercentage(100);
 			cell = new PdfPCell(new Phrase("#", new Font(FontFamily.HELVETICA, 8, Element.ALIGN_CENTER)));
-			cell.setBackgroundColor(tableHeadGrey);
+			cell.setHorizontalAlignment(Element.ALIGN_CENTER);
 			pdfpTable.addCell(cell);
 
 			cell = new PdfPCell(new Phrase("Item name", new Font(FontFamily.HELVETICA, 8, Element.ALIGN_CENTER)));
-			cell.setBackgroundColor(tableHeadGrey);
+			cell.setHorizontalAlignment(Element.ALIGN_CENTER);
 			pdfpTable.addCell(cell);
 
 			cell = new PdfPCell(new Phrase("Price", new Font(FontFamily.HELVETICA, 8, Element.ALIGN_CENTER)));
-			cell.setBackgroundColor(tableHeadGrey);
+			cell.setHorizontalAlignment(Element.ALIGN_CENTER);
 			pdfpTable.addCell(cell);
 
 			cell = new PdfPCell(new Phrase("Quantity", new Font(FontFamily.HELVETICA, 8, Element.ALIGN_CENTER)));
-			cell.setBackgroundColor(tableHeadGrey);
+			cell.setHorizontalAlignment(Element.ALIGN_CENTER);
 			pdfpTable.addCell(cell);
 
 			cell = new PdfPCell(new Phrase("Total", new Font(FontFamily.HELVETICA, 8, Element.ALIGN_CENTER)));
-			cell.setBackgroundColor(tableHeadGrey);
+			cell.setHorizontalAlignment(Element.ALIGN_CENTER);
 			pdfpTable.addCell(cell);
 
 			int slNo = 1;
 			for (SalesProductMappingBean bean : salesProductsList) {
-				cell = new PdfPCell(
-						new Phrase(String.valueOf(slNo), new Font(FontFamily.HELVETICA, 8, Element.ALIGN_CENTER)));
+				cell = new PdfPCell(new Phrase(String.valueOf(slNo), new Font(FontFamily.HELVETICA, 8, Font.NORMAL)));
 				cell.setBorder(4);
 				pdfpTable.addCell(cell);
 
 				cell = new PdfPCell(new Phrase(bean.getProductId().getProductName(),
-						new Font(FontFamily.HELVETICA, 8, Element.ALIGN_CENTER)));
+						new Font(FontFamily.HELVETICA, 8, Font.NORMAL)));
 				cell.setBorder(4);
 				pdfpTable.addCell(cell);
 
 				cell = new PdfPCell(new Phrase(bean.getProductId().getSellingPrice().toString(),
-						new Font(FontFamily.HELVETICA, 8, Element.ALIGN_CENTER)));
+						new Font(FontFamily.HELVETICA, 8, Font.NORMAL)));
 				cell.setBorder(4);
 				pdfpTable.addCell(cell);
 
-				cell = new PdfPCell(new Phrase(bean.getQuantity().toString(),
-						new Font(FontFamily.HELVETICA, 8, Element.ALIGN_CENTER)));
+				cell = new PdfPCell(
+						new Phrase(bean.getQuantity().toString(), new Font(FontFamily.HELVETICA, 8, Font.NORMAL)));
 				cell.setBorder(4);
 				pdfpTable.addCell(cell);
 
 				cell = new PdfPCell(new Phrase(bean.getProductTotalAmt().toString(),
-						new Font(FontFamily.HELVETICA, 8, Element.ALIGN_CENTER)));
+						new Font(FontFamily.HELVETICA, 8, Font.NORMAL)));
 				cell.setBorder(com.itextpdf.text.Rectangle.RIGHT | com.itextpdf.text.Rectangle.LEFT);
 				pdfpTable.addCell(cell);
 
@@ -249,20 +270,65 @@ public class TransactionAction {
 					| com.itextpdf.text.Rectangle.RIGHT | com.itextpdf.text.Rectangle.BOTTOM);
 			pdfpTable.addCell(cell);
 
-			cell = new PdfPCell(new Paragraph("Sub total", new Font(FontFamily.HELVETICA, 8, Element.ALIGN_RIGHT)));
-			cell.setColspan(4);
-			pdfpTable.addCell(cell);
-
-			cell = new PdfPCell(new Paragraph(salesBean.getTotalBeforeDiscount().toString(),
-					new Font(FontFamily.HELVETICA, 8)));
+			cell = new PdfPCell(new Paragraph("Sub total", new Font(FontFamily.HELVETICA, 8)));
 			cell.setHorizontalAlignment(Element.ALIGN_RIGHT);
 			cell.setColspan(4);
 			pdfpTable.addCell(cell);
 
+			cell = new PdfPCell(
+					new Paragraph(salesBean.getTotalBeforeDiscount().toString(), new Font(FontFamily.HELVETICA, 8)));
+			cell.setHorizontalAlignment(Element.ALIGN_RIGHT);
+			pdfpTable.addCell(cell);
+
+			if (salesBean.getDiscountEnabled().equals("Y") && salesBean.getDiscount() != null) {
+
+				cell = new PdfPCell(new Paragraph(" ", new Font(FontFamily.HELVETICA, 8)));
+				cell.setHorizontalAlignment(Element.ALIGN_RIGHT);
+				cell.setBorder(0);
+				cell.setColspan(4);
+				pdfpTable.addCell(cell);
+
+				cell = new PdfPCell(new Paragraph(" ", new Font(FontFamily.HELVETICA, 8)));
+				cell.setHorizontalAlignment(Element.ALIGN_RIGHT);
+				cell.setBorder(0);
+				pdfpTable.addCell(cell);
+
+				cell = new PdfPCell(new Paragraph("Discount", new Font(FontFamily.HELVETICA, 8)));
+				cell.setHorizontalAlignment(Element.ALIGN_RIGHT);
+				cell.setBorder(0);
+				cell.setColspan(4);
+				pdfpTable.addCell(cell);
+
+				cell = new PdfPCell(
+						new Paragraph(salesBean.getDiscount().toString(), new Font(FontFamily.HELVETICA, 8)));
+				cell.setHorizontalAlignment(Element.ALIGN_RIGHT);
+				cell.setBorder(0);
+				pdfpTable.addCell(cell);
+			} else {
+				cell = new PdfPCell(new Paragraph(" ", new Font(FontFamily.HELVETICA, 8)));
+				cell.setHorizontalAlignment(Element.ALIGN_RIGHT);
+				cell.setBorder(0);
+				cell.setColspan(4);
+				pdfpTable.addCell(cell);
+
+				cell = new PdfPCell(new Paragraph(" ", new Font(FontFamily.HELVETICA, 8)));
+				cell.setHorizontalAlignment(Element.ALIGN_RIGHT);
+				cell.setBorder(0);
+				pdfpTable.addCell(cell);
+			}
 			pdfpTable.setSpacingBefore(10);
 			document.add(pdfpTable);
 
 			document.close();
+			// to open the pdf file automatically after generating
+			if (Desktop.isDesktopSupported()) {
+				try {
+					File myFile = new File("bill.pdf");
+					Desktop.getDesktop().open(myFile);
+				} catch (IOException ex) {
+					ex.printStackTrace();
+				}
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
