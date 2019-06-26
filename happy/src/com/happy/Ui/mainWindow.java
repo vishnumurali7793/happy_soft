@@ -98,6 +98,13 @@ public class mainWindow extends JFrame {
 		mnTransaction.add(mntmSales);
 		
 		JMenuItem mntmPurchase = new JMenuItem("Purchase");
+		mntmPurchase.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				Purchase purchase = new Purchase();
+				purchase.setVisible(true);
+				purchase.setLocationRelativeTo(null);
+			}
+		});
 		mnTransaction.add(mntmPurchase);
 		
 		JMenu mnReports = new JMenu("Reports");

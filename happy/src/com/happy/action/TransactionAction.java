@@ -57,7 +57,7 @@ public class TransactionAction {
 		return transactionDao.getAccountHeads();
 	}
 
-	public void getHeadById(int headId) {
+	public void getHeadByIdforSales(int headId) {
 		if (headId > 0) {
 			headBean = transactionDao.getHeadById(headId);
 		} else {
