@@ -16,6 +16,9 @@ public class ProductBean {
 	@Column(name = "product_id")
 	private Integer productId;
 	
+	@Column(name="item_code")
+	private String productCode;
+	
 	@Column(name="product_name")
 	private String productName;
 	
@@ -77,6 +80,14 @@ public class ProductBean {
 
 	public void setDeleteStatus(String deleteStatus) {
 		this.deleteStatus = deleteStatus;
+	}
+
+	public String getProductCode() {
+		return productCode;
+	}
+
+	public void setProductCode(String productCode) {
+		this.productCode = productCode;
 	}
 	
 }

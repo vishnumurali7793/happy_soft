@@ -23,14 +23,25 @@ public class SalesProductMappingBean {
 	private SalesBean salesBillId;
 	
 	@ManyToOne
-	@JoinColumn(name="item")
-	private ProductBean product;
+	@JoinColumn(name="item_id")
+	private ProductBean productId;
 	
 	@Column(name="quantity")
 	private Double quantity;
 	
-	@Column(name="total")
+	@Column(name="item_total")
 	private Double productTotalAmt;
+	
+	@Column(name="delete_status")
+	private String deleteStatus="N";
+
+	public String getDeleteStatus() {
+		return deleteStatus;
+	}
+
+	public void setDeleteStatus(String deleteStatus) {
+		this.deleteStatus = deleteStatus;
+	}
 
 	public Integer getMappingId() {
 		return mappingId;
@@ -48,14 +59,6 @@ public class SalesProductMappingBean {
 		this.salesBillId = salesBillId;
 	}
 
-	public ProductBean getProduct() {
-		return product;
-	}
-
-	public void setProduct(ProductBean product) {
-		this.product = product;
-	}
-
 	public Double getQuantity() {
 		return quantity;
 	}
@@ -64,8 +67,16 @@ public class SalesProductMappingBean {
 		this.quantity = quantity;
 	}
 
+	public ProductBean getProductId() {
+		return productId;
+	}
+
 	public Double getProductTotalAmt() {
 		return productTotalAmt;
+	}
+
+	public void setProductId(ProductBean productId) {
+		this.productId = productId;
 	}
 
 	public void setProductTotalAmt(Double productTotalAmt) {

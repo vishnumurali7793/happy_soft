@@ -78,9 +78,9 @@ public class AddProduct extends JFrame {
 
 		productId = new JTextField();
 		productId.setBounds(267, 63, 124, 19);
-		if(master.getProductId()!=null) {
+		if (master.getProductId() != null) {
 			productId.setText(String.valueOf(master.getProductId() + 1));
-		}else {
+		} else {
 			productId.setText("1");
 		}
 		productId.setEditable(false);
@@ -137,6 +137,13 @@ public class AddProduct extends JFrame {
 					productMaster.setProductType(productCategory.getSelectedItem().toString());
 					productMaster.setSellingUnit(sellingUnit.getSelectedItem().toString());
 					productMaster.setSellingPrice(Double.parseDouble(price.getText()));
+
+					char[] nameArray = productName.getText().toUpperCase().toCharArray();
+					int length = nameArray.length;
+
+					productMaster
+							.setProductCode("ITE" + productId.getText() + nameArray[0] + nameArray[1] + nameArray[2]
+									+ "-" + nameArray[length - 3] + nameArray[length - 2] + nameArray[length - 1]);
 
 					try {
 						master.addProduct(productMaster);

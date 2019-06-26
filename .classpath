@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="src" path="happy/src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="lib" path="happy/lib/antlr-2.7.7.jar"/>
 	<classpathentry kind="lib" path="happy/lib/byte-buddy-1.9.10.jar"/>
 	<classpathentry kind="lib" path="happy/lib/classmate-1.3.4.jar"/>
@@ -25,5 +29,6 @@
 	<classpathentry kind="lib" path="happy/lib/mysql-connector-java-8.0.16.jar"/>
 	<classpathentry kind="lib" path="happy/lib/stax-ex-1.8.jar"/>
 	<classpathentry kind="lib" path="happy/lib/txw2-2.3.1.jar"/>
+	<classpathentry kind="lib" path="/root/git/happy_soft/happy/lib/itextpdf-5.5.13.jar"/>
 	<classpathentry kind="output" path="happy/bin"/>
 </classpath>
