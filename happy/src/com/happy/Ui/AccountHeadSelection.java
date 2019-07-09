@@ -84,8 +84,13 @@ public class AccountHeadSelection extends JFrame {
 				}
 			}
 		});
-		table.setModel(new DefaultTableModel(new Object[][] {},
-				new String[] { "ID", "Head code", "Account head name", "Phone" }));
+		table.setModel(new DefaultTableModel(
+			new Object[][] {
+			},
+			new String[] {
+				"ID", "Head code", "Account head name", "Phone", "Type"
+			}
+		));
 		table.getColumnModel().getColumn(1).setPreferredWidth(123);
 		table.getColumnModel().getColumn(2).setPreferredWidth(325);
 		table.getColumnModel().getColumn(3).setPreferredWidth(157);
@@ -99,13 +104,14 @@ public class AccountHeadSelection extends JFrame {
 
 		DefaultTableModel tableModel = (DefaultTableModel) table.getModel();
 		int id;
-		String headCode, accountName, phone;
+		String headCode, accountName, phone, type;
 		for (AccountHeadBean headBean : accountList) {
 			id = headBean.getHeadId();
 			headCode = headBean.getHeadCode();
 			accountName = headBean.getHeadName();
 			phone = headBean.getHeadPhone();
-			tableModel.addRow(new Object[] { id, headCode, accountName, phone });
+			type = headBean.getHeadType();
+			tableModel.addRow(new Object[] { id, headCode, accountName, phone, type });
 		}
 	}
 }

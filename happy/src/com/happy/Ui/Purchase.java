@@ -49,6 +49,8 @@ public class Purchase extends JFrame {
 	private List<ProductBean> list=new ArrayList<>();
 	private TransactionAction transactionAction = new TransactionAction();
 	private ProductBean productBean;
+	private String supplierCode;
+	private String supplierName;
 
 	/**
 	 * Launch the application.
@@ -146,6 +148,16 @@ public class Purchase extends JFrame {
 		panel.add(comboPurchType);
 		
 		JRadioButton radioDiscount = new JRadioButton("Enable discount");
+		radioDiscount.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if(radioDiscount.isSelected()) {
+					txtDiscount.setEditable(true);
+				}
+				if(!radioDiscount.isSelected()) {
+					txtDiscount.setEditable(false);
+				}
+			}
+		});
 		radioDiscount.setBounds(675, 23, 144, 23);
 		panel.add(radioDiscount);
 		
@@ -234,6 +246,7 @@ public class Purchase extends JFrame {
 		txtDiscount.setBounds(754, 65, 124, 19);
 		panel_3.add(txtDiscount);
 		txtDiscount.setColumns(10);
+		txtDiscount.setEditable(false);
 		
 		JLabel lblGrantTotal = new JLabel("Grant Total : ");
 		lblGrantTotal.setFont(new Font("Dialog", Font.BOLD, 20));
@@ -289,5 +302,26 @@ public class Purchase extends JFrame {
 		DefaultTableModel model = (DefaultTableModel) table_1.getModel();
 		model.addRow(new Object[] { code, name, unit, unitPrice, quantity, totalPrice });
 		new Sales();
+	}
+	
+	public void refresh() {
+		txtSupplierCode.setText(supplierCode);
+		txtSupplierName.setText(supplierName);
+	}
+
+	public String getSupplierCode() {
+		return supplierCode;
+	}
+
+	public String getSupplierName() {
+		return supplierName;
+	}
+
+	public void setSupplierCode(String supplierCode) {
+		this.supplierCode = supplierCode;
+	}
+
+	public void setSupplierName(String supplierName) {
+		this.supplierName = supplierName;
 	}
 }

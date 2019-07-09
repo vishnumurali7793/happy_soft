@@ -1,6 +1,8 @@
 package com.happy.action;
 
+import com.happy.Ui.Purchase;
 import com.happy.Ui.Sales;
+import com.happy.Ui.mainWindow;
 import com.happy.dao.TransactionDao;
 import com.happy.entities.AccountHeadBean;
 import com.happy.entities.ProductBean;
@@ -37,6 +39,11 @@ public class TransactionAction {
 	Sales sales;
 	TransactionDao transactionDao = new TransactionDao();
 	AccountHeadBean headBean = new AccountHeadBean();
+	mainWindow mainWindow = new mainWindow();
+	SalesBean salesBean = new SalesBean();
+	Purchase purchase;
+
+	private String billType; // to switch between sales and purchase
 
 	public List<ProductBean> getProductList() {
 		return transactionDao.getProductList();
@@ -64,14 +71,25 @@ public class TransactionAction {
 			JOptionPane.showMessageDialog(null, "Some error occured");
 		}
 
-		if (headBean != null) {
-			sales = new Sales();
-			sales.setVisible(true);
-			sales.setCustName(headBean.getHeadName());
-			sales.setCustAddress(headBean.getHeadAddress());
-			sales.setCustPhone(headBean.getHeadPhone());
-			sales.setCustHeadCode(headBean.getHeadCode());
-			sales.refresh();
+		if (headBean.getHeadType().equals("Customer")) {
+			if (headBean != null) {
+				sales = new Sales();
+				sales.setVisible(true);
+				sales.setCustName(headBean.getHeadName());
+				sales.setCustAddress(headBean.getHeadAddress());
+				sales.setCustPhone(headBean.getHeadPhone());
+				sales.setCustHeadCode(headBean.getHeadCode());
+				sales.refresh();
+			}
+		}
+		if (headBean.getHeadType().equals("Supplier")) {
+			if (headBean != null) {
+				purchase = new Purchase();
+				purchase.setVisible(true);
+				purchase.setSupplierCode(headBean.getHeadCode());
+				purchase.setSupplierName(headBean.getHeadName());
+				purchase.refresh();
+			}
 		}
 
 	}
@@ -332,5 +350,13 @@ public class TransactionAction {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	public String getBillType() {
+		return billType;
+	}
+
+	public void setBillType(String billType) {
+		this.billType = billType;
 	}
 }
