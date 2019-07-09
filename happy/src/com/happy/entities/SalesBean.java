@@ -10,6 +10,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.hibernate.annotations.Type;
 
@@ -46,6 +47,9 @@ public class SalesBean {
 	
 	@Column(name="payment_type")
 	private String paymentType;
+	
+	@Transient
+	private String billType;
 
 	public String getDeleteStatus() {
 		return deleteStatus;
@@ -117,6 +121,14 @@ public class SalesBean {
 
 	public void setPaymentType(String paymentType) {
 		this.paymentType = paymentType;
+	}
+
+	public String getBillType() {
+		return billType;
+	}
+
+	public void setBillType(String billType) {
+		this.billType = billType;
 	}
 
 }

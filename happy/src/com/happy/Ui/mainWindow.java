@@ -5,6 +5,9 @@ import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+
+import com.happy.entities.SalesBean;
+
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
@@ -21,6 +24,7 @@ import java.awt.Color;
 public class mainWindow extends JFrame {
 
 	private JPanel contentPane;
+	SalesBean salesBean;
 
 	/**
 	 * Launch the application.
@@ -83,23 +87,33 @@ public class mainWindow extends JFrame {
 			}
 		});
 		mnFile.add(mntmExit);
-		
+
 		JMenu mnTransaction = new JMenu("Transaction");
 		menuBar.add(mnTransaction);
-		
+
 		JMenuItem mntmSales = new JMenuItem("Sales");
 		mntmSales.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				Sales sales = new Sales();
 				sales.setVisible(true);
 				sales.setLocationRelativeTo(null);
+				salesBean = new SalesBean();
+				salesBean.setBillType("sales");
 			}
 		});
 		mnTransaction.add(mntmSales);
-		
+
 		JMenuItem mntmPurchase = new JMenuItem("Purchase");
+		mntmPurchase.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				Purchase purchase = new Purchase();
+				purchase.setVisible(true);
+				purchase.setLocationRelativeTo(null);
+
+			}
+		});
 		mnTransaction.add(mntmPurchase);
-		
+
 		JMenu mnReports = new JMenu("Reports");
 		menuBar.add(mnReports);
 		contentPane = new JPanel();
@@ -109,4 +123,5 @@ public class mainWindow extends JFrame {
 		contentPane.setLayout(null);
 
 	}
+
 }

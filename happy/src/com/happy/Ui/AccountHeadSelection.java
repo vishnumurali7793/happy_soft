@@ -75,11 +75,11 @@ public class AccountHeadSelection extends JFrame {
 		table.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
-				if(e.getKeyCode()==KeyEvent.VK_ENTER) {
+				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
 					int row = table.getSelectedRow();
 					int column = 0;
 					int headId = (int) table.getValueAt(row, column);
-					trAction.getHeadById(headId);
+					trAction.getHeadByIdforSales(headId);
 					dispose();
 				}
 			}
@@ -88,7 +88,7 @@ public class AccountHeadSelection extends JFrame {
 			new Object[][] {
 			},
 			new String[] {
-				"ID", "Head code", "Account head name", "Phone"
+				"ID", "Head code", "Account head name", "Phone", "Type"
 			}
 		));
 		table.getColumnModel().getColumn(1).setPreferredWidth(123);
@@ -104,13 +104,14 @@ public class AccountHeadSelection extends JFrame {
 
 		DefaultTableModel tableModel = (DefaultTableModel) table.getModel();
 		int id;
-		String headCode, accountName, phone;
+		String headCode, accountName, phone, type;
 		for (AccountHeadBean headBean : accountList) {
 			id = headBean.getHeadId();
 			headCode = headBean.getHeadCode();
 			accountName = headBean.getHeadName();
 			phone = headBean.getHeadPhone();
-			tableModel.addRow(new Object[] { id, headCode, accountName, phone });
+			type = headBean.getHeadType();
+			tableModel.addRow(new Object[] { id, headCode, accountName, phone, type });
 		}
 	}
 }
