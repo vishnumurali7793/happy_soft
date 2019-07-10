@@ -6,6 +6,7 @@ import com.happy.Ui.mainWindow;
 import com.happy.dao.TransactionDao;
 import com.happy.entities.AccountHeadBean;
 import com.happy.entities.ProductBean;
+import com.happy.entities.PurchaseBean;
 import com.happy.entities.SalesBean;
 import com.happy.entities.SalesProductMappingBean;
 import com.itextpdf.text.BaseColor;
@@ -42,8 +43,6 @@ public class TransactionAction {
 	mainWindow mainWindow = new mainWindow();
 	SalesBean salesBean = new SalesBean();
 	Purchase purchase;
-
-	private String billType; // to switch between sales and purchase
 
 	public List<ProductBean> getProductList() {
 		return transactionDao.getProductList();
@@ -352,11 +351,10 @@ public class TransactionAction {
 		}
 	}
 
-	public String getBillType() {
-		return billType;
-	}
-
-	public void setBillType(String billType) {
-		this.billType = billType;
+	public void savePurchase(PurchaseBean purchaseBean) {
+		if(purchaseBean!=null) {
+			transactionDao.savePurchase(purchaseBean);
+		}
+		
 	}
 }

@@ -10,6 +10,7 @@ import org.hibernate.cfg.Configuration;
 
 import com.happy.entities.AccountHeadBean;
 import com.happy.entities.ProductBean;
+import com.happy.entities.PurchaseBean;
 import com.happy.entities.SalesBean;
 import com.happy.entities.SalesProductMappingBean;
 
@@ -179,6 +180,20 @@ public class TransactionDao {
 			e.printStackTrace();
 			return null;
 		}
+	}
+
+	public void savePurchase(PurchaseBean purchaseBean) {
+		SessionFactory sessionFactory = new Configuration().configure().buildSessionFactory();
+		Session session = sessionFactory.openSession();
+		session.beginTransaction();
+		try {
+			session.save(purchaseBean);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}finally {
+			session.close();
+		}
+		
 	}
 
 

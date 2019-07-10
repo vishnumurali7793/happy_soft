@@ -282,12 +282,6 @@ public class Sales extends JFrame {
 					spMappingBean.setProductId(productBean);
 					spMappingBean.setProductTotalAmt(itemWiseTotal);
 					spMappingBean.setQuantity(quantity);
-					System.out.println(spMappingBean.getDeleteStatus());
-					System.out.println(spMappingBean.getMappingId());
-					System.out.println(spMappingBean.getProductId());
-					System.out.println(spMappingBean.getProductTotalAmt());
-					System.out.println(spMappingBean.getQuantity());
-					System.out.println(spMappingBean.getSalesBillId());
 					mapStatus = transactionAction.saveSalesProductMapping(spMappingBean);
 				}
 				transactionAction.generateSalesBill(salesBean, spMappingBean);
@@ -372,13 +366,13 @@ public class Sales extends JFrame {
 		textHeadCode.setBounds(487, 24, 190, 19);
 		panel_1.add(textHeadCode);
 		textHeadCode.setColumns(10);
-		
+
 		JLabel lblPaymentType = new JLabel("Payment type");
 		lblPaymentType.setBounds(746, 109, 96, 15);
 		panel_1.add(lblPaymentType);
-		
+
 		comboPaymentType = new JComboBox();
-		comboPaymentType.setModel(new DefaultComboBoxModel(new String[] {"", "Cash", "Credit"}));
+		comboPaymentType.setModel(new DefaultComboBoxModel(new String[] { "", "Cash", "Credit" }));
 		comboPaymentType.setBounds(881, 100, 107, 24);
 		panel_1.add(comboPaymentType);
 
