@@ -9,8 +9,10 @@ import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 
 import com.happy.entities.AccountHeadBean;
+import com.happy.entities.DayBookBean;
 import com.happy.entities.ProductBean;
 import com.happy.entities.PurchaseBean;
+import com.happy.entities.PurchaseProductMappingBean;
 import com.happy.entities.SalesBean;
 import com.happy.entities.SalesProductMappingBean;
 
@@ -175,7 +177,7 @@ public class TransactionDao {
 		session.beginTransaction();
 		try {
 			return session.createQuery("from SalesProductMappingBean where salesBillId=:billId")
-			.setParameter("billId", mapBean.getSalesBillId()).list();
+					.setParameter("billId", mapBean.getSalesBillId()).list();
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
@@ -190,12 +192,38 @@ public class TransactionDao {
 			session.save(purchaseBean);
 		} catch (Exception e) {
 			e.printStackTrace();
+		} finally {
+			session.close();
+		}
+
+	}
+
+	public void savePurchaseProduct(PurchaseProductMappingBean purchProductMappingBean) {
+		SessionFactory sessionFactory = new Configuration().configure().buildSessionFactory();
+		Session session = sessionFactory.openSession();
+		session.beginTransaction();
+		try {
+			session.save(purchProductMappingBean);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}finally {
+			session.close();
+		}
+
+	}
+
+	public void saveDayBookEntry(DayBookBean dayBookBean) {
+		SessionFactory sessionFactory = new Configuration().configure().buildSessionFactory();
+		Session session = sessionFactory.openSession();
+		session.beginTransaction();
+		try {
+			session.save(dayBookBean);
+		}catch(Exception e) {
+			e.printStackTrace();
 		}finally {
 			session.close();
 		}
 		
 	}
-
-
 
 }

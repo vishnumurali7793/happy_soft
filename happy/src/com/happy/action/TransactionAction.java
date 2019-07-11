@@ -5,8 +5,10 @@ import com.happy.Ui.Sales;
 import com.happy.Ui.mainWindow;
 import com.happy.dao.TransactionDao;
 import com.happy.entities.AccountHeadBean;
+import com.happy.entities.DayBookBean;
 import com.happy.entities.ProductBean;
 import com.happy.entities.PurchaseBean;
+import com.happy.entities.PurchaseProductMappingBean;
 import com.happy.entities.SalesBean;
 import com.happy.entities.SalesProductMappingBean;
 import com.itextpdf.text.BaseColor;
@@ -351,10 +353,25 @@ public class TransactionAction {
 		}
 	}
 
-	public void savePurchase(PurchaseBean purchaseBean) {
-		if(purchaseBean!=null) {
+	public String savePurchase(PurchaseBean purchaseBean) {
+		if (purchaseBean != null) {
 			transactionDao.savePurchase(purchaseBean);
+			return SUCCESS;
 		}
-		
+		return null;
+	}
+
+	public void savePurchaseProduct(PurchaseProductMappingBean purchProductMappingBean) {
+		if(purchProductMappingBean!=null) {
+			transactionDao.savePurchaseProduct(purchProductMappingBean);
+		}
+	}
+
+	public String saveDayBookEntry(DayBookBean dayBookBean) {
+		if(dayBookBean!=null) {
+			transactionDao.saveDayBookEntry(dayBookBean);
+			return SUCCESS;
+		}
+		return null;
 	}
 }

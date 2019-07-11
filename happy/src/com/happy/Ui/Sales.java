@@ -248,6 +248,7 @@ public class Sales extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				salesBean = new SalesBean();
 				spMappingBean = new SalesProductMappingBean();
+				accountBean = new AccountHeadBean();
 				String status = null;
 
 				accountBean = transactionAction.getHeadsByHeadCode(textHeadCode.getText().toString());
@@ -293,6 +294,7 @@ public class Sales extends JFrame {
 						JOptionPane.showMessageDialog(null, "Bill not saved successfully");
 					} else if (status.equals(null)) {
 						JOptionPane.showMessageDialog(null, "Some error occured");
+						return;
 					}
 				} else {
 					JOptionPane.showMessageDialog(null, "Some error occured");

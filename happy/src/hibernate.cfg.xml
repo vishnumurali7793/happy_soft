@@ -41,6 +41,8 @@
         <mapping class="com.happy.entities.SalesBean"/>
         <mapping class="com.happy.entities.SalesProductMappingBean"/>
         <mapping class="com.happy.entities.PurchaseBean"/>
+        <mapping class="com.happy.entities.PurchaseProductMappingBean"/>
+        <mapping class="com.happy.entities.DayBookBean"/>
 
     </session-factory>
 

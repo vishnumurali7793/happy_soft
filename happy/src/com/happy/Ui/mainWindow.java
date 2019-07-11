@@ -113,6 +113,16 @@ public class mainWindow extends JFrame {
 			}
 		});
 		mnTransaction.add(mntmPurchase);
+		
+		JMenuItem mntmDayBook = new JMenuItem("Day Book");
+		mntmDayBook.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				DayBook dayBook = new DayBook();
+				dayBook.setVisible(true);
+				dayBook.setLocationRelativeTo(null);
+			}
+		});
+		mnTransaction.add(mntmDayBook);
 
 		JMenu mnReports = new JMenu("Reports");
 		menuBar.add(mnReports);
@@ -123,5 +133,4 @@ public class mainWindow extends JFrame {
 		contentPane.setLayout(null);
 
 	}
-
 }

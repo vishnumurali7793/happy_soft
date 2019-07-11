@@ -20,6 +20,7 @@ import com.happy.action.TransactionAction;
 import com.happy.entities.AccountHeadBean;
 import com.happy.entities.ProductBean;
 import com.happy.entities.PurchaseBean;
+import com.happy.entities.PurchaseProductMappingBean;
 import com.toedter.calendar.JDateChooser;
 import javax.swing.border.LineBorder;
 import java.awt.Color;
@@ -57,6 +58,7 @@ public class Purchase extends JFrame {
 	private Double subTotal = 0.0;
 	private PurchaseBean purchaseBean;
 	private AccountHeadBean accountHeadBean;
+	private PurchaseProductMappingBean purchProductMappingBean;
 
 	/**
 	 * Launch the application.
@@ -259,10 +261,10 @@ public class Purchase extends JFrame {
 		txtDiscount.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
-				if(e.getKeyCode()==KeyEvent.VK_ENTER) {
+				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
 					double discount = Double.parseDouble(txtDiscount.getText());
 					double subTotal = Double.parseDouble(txtSubTotal.getText());
-					lblGrantTotalValue.setText(String.valueOf(subTotal-discount));
+					lblGrantTotalValue.setText(String.valueOf(subTotal - discount));
 				}
 			}
 		});
@@ -284,14 +286,17 @@ public class Purchase extends JFrame {
 		JButton btnSaveBill = new JButton("Save bill");
 		btnSaveBill.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+
+				purchaseBean = new PurchaseBean();
+				accountHeadBean = new AccountHeadBean();
+				purchProductMappingBean = new PurchaseProductMappingBean();
+				productBean = new ProductBean();
+
 				if (txtBillNo.getText() != null
 						|| !txtBillNo.getText().isEmpty() && dateBillDate.getDate() != null
 								&& txtSupplierCode.getText() != null
 						|| !txtSupplierCode.getText().isEmpty() && txtSupplierName.getText() != null
 						|| !txtSupplierName.getText().isEmpty() && comboPurchType.getSelectedIndex() != -1) {
-
-					purchaseBean = new PurchaseBean();
-					accountHeadBean = new AccountHeadBean();
 					accountHeadBean = transactionAction.getHeadsByHeadCode(txtSupplierCode.getText().toString());
 					purchaseBean.setBillNo(txtBillNo.getText().toString());
 					purchaseBean.setBillDate(dateBillDate.getDate());
@@ -307,8 +312,31 @@ public class Purchase extends JFrame {
 					} else {
 						purchaseBean.setDiscountEnabled("N");
 					}
-					transactionAction.savePurchase(purchaseBean);
-					JOptionPane.showMessageDialog(null, "Bill saved!");
+					String status = transactionAction.savePurchase(purchaseBean);
+
+					DefaultTableModel model = (DefaultTableModel) table_1.getModel();
+					String itemCode = null;
+					Double quantity, purchaseRate, itemwiseTotal = 0.0;
+
+					if (status != null && status.equals("success")) {
+						for (int i = 0; i < model.getRowCount(); i++) {
+							itemCode = (String) model.getValueAt(i, 0);
+							quantity = Double.parseDouble(model.getValueAt(i, 4).toString());
+							purchaseRate = Double.parseDouble(model.getValueAt(i, 3).toString());
+							itemwiseTotal = Double.parseDouble(model.getValueAt(i, 5).toString());
+							productBean.setProductId(transactionAction.getProductIdByCode(itemCode));
+							purchProductMappingBean.setMappingId(purchaseBean.getpBillId());
+							purchProductMappingBean.setProduct(new ProductBean());
+							purchProductMappingBean.getProduct().setProductId(productBean.getProductId());
+							purchProductMappingBean.setPurchase(new PurchaseBean());
+							purchProductMappingBean.getPurchase().setpBillId(purchaseBean.getpBillId());
+							purchProductMappingBean.setQuantity(quantity);
+							purchProductMappingBean.setPurchaseRate(purchaseRate);
+							purchProductMappingBean.setItemTotal(itemwiseTotal);
+							transactionAction.savePurchaseProduct(purchProductMappingBean);
+						}
+						JOptionPane.showMessageDialog(null, "Bill saved!");
+					}
 				} else {
 					JOptionPane.showMessageDialog(null, "All fields are mandatory");
 				}
