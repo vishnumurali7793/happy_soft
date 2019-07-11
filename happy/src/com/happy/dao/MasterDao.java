@@ -9,9 +9,9 @@ import org.hibernate.cfg.Configuration;
 
 import com.happy.entities.AccountHeadBean;
 import com.happy.entities.ProductBean;
+import com.happy.entities.StockBean;
 
 public class MasterDao {
-	
 
 	public void addProduct(ProductBean productMaster) {
 		SessionFactory sessionFactory = new Configuration().configure().buildSessionFactory();
@@ -40,7 +40,6 @@ public class MasterDao {
 		} finally {
 			session.close();
 		}
-
 	}
 
 	public void addAccountHead(AccountHeadBean head) {
@@ -55,6 +54,19 @@ public class MasterDao {
 			session.close();
 		}
 
+	}
+
+	public void updateOpeningStock(StockBean stock) {
+		SessionFactory sessionFactory = new Configuration().configure().buildSessionFactory();
+		Session session = sessionFactory.openSession();
+		session.beginTransaction();
+		try {
+			session.saveOrUpdate("StockBean",stock);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}finally {
+			session.close();
+		}
 	}
 
 }

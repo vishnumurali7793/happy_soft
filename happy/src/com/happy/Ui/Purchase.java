@@ -21,6 +21,7 @@ import com.happy.entities.AccountHeadBean;
 import com.happy.entities.ProductBean;
 import com.happy.entities.PurchaseBean;
 import com.happy.entities.PurchaseProductMappingBean;
+import com.happy.entities.StockBean;
 import com.toedter.calendar.JDateChooser;
 import javax.swing.border.LineBorder;
 import java.awt.Color;
@@ -59,6 +60,7 @@ public class Purchase extends JFrame {
 	private PurchaseBean purchaseBean;
 	private AccountHeadBean accountHeadBean;
 	private PurchaseProductMappingBean purchProductMappingBean;
+	private StockBean stockBean;
 
 	/**
 	 * Launch the application.
@@ -291,12 +293,10 @@ public class Purchase extends JFrame {
 				accountHeadBean = new AccountHeadBean();
 				purchProductMappingBean = new PurchaseProductMappingBean();
 				productBean = new ProductBean();
+				stockBean = new StockBean();
 
-				if (txtBillNo.getText() != null
-						|| !txtBillNo.getText().isEmpty() && dateBillDate.getDate() != null
-								&& txtSupplierCode.getText() != null
-						|| !txtSupplierCode.getText().isEmpty() && txtSupplierName.getText() != null
-						|| !txtSupplierName.getText().isEmpty() && comboPurchType.getSelectedIndex() != -1) {
+				if (txtBillNo.getText() != "" && txtSupplierCode.getText() != "" && dateBillDate.getDate() != null
+						&& comboPurchType.getSelectedItem() != "") {
 					accountHeadBean = transactionAction.getHeadsByHeadCode(txtSupplierCode.getText().toString());
 					purchaseBean.setBillNo(txtBillNo.getText().toString());
 					purchaseBean.setBillDate(dateBillDate.getDate());
@@ -316,7 +316,7 @@ public class Purchase extends JFrame {
 
 					DefaultTableModel model = (DefaultTableModel) table_1.getModel();
 					String itemCode = null;
-					Double quantity, purchaseRate, itemwiseTotal = 0.0;
+					Double quantity, purchaseRate, itemwiseTotal, totalStock = 0.0;
 
 					if (status != null && status.equals("success")) {
 						for (int i = 0; i < model.getRowCount(); i++) {
@@ -324,18 +324,30 @@ public class Purchase extends JFrame {
 							quantity = Double.parseDouble(model.getValueAt(i, 4).toString());
 							purchaseRate = Double.parseDouble(model.getValueAt(i, 3).toString());
 							itemwiseTotal = Double.parseDouble(model.getValueAt(i, 5).toString());
-							productBean.setProductId(transactionAction.getProductIdByCode(itemCode));
-							purchProductMappingBean.setMappingId(purchaseBean.getpBillId());
-							purchProductMappingBean.setProduct(new ProductBean());
-							purchProductMappingBean.getProduct().setProductId(productBean.getProductId());
-							purchProductMappingBean.setPurchase(new PurchaseBean());
-							purchProductMappingBean.getPurchase().setpBillId(purchaseBean.getpBillId());
-							purchProductMappingBean.setQuantity(quantity);
-							purchProductMappingBean.setPurchaseRate(purchaseRate);
-							purchProductMappingBean.setItemTotal(itemwiseTotal);
-							transactionAction.savePurchaseProduct(purchProductMappingBean);
+							productBean = transactionAction.getProductByItemCode(itemCode);
+							stockBean = transactionAction.getStockByProductId(productBean.getProductId());
+							if (productBean != null) {
+								purchProductMappingBean.setMappingId(purchaseBean.getpBillId());
+								purchProductMappingBean.setProduct(new ProductBean());
+								purchProductMappingBean.getProduct().setProductId(productBean.getProductId());
+								purchProductMappingBean.setPurchase(new PurchaseBean());
+								purchProductMappingBean.getPurchase().setpBillId(purchaseBean.getpBillId());
+								purchProductMappingBean.setQuantity(quantity);
+								purchProductMappingBean.setPurchaseRate(purchaseRate);
+								purchProductMappingBean.setItemTotal(itemwiseTotal);
+								transactionAction.savePurchaseProduct(purchProductMappingBean);
+								if (stockBean.getStock() != null && stockBean.getStock() > 0) {
+									totalStock = stockBean.getStock() + purchProductMappingBean.getQuantity();
+									System.out.println(totalStock);
+								} else {
+									totalStock = purchProductMappingBean.getQuantity();
+									System.out.println(totalStock);
+								}
+								//stock updation
+								transactionAction.updateStock(productBean.getProductId(), totalStock);
+							}
+							JOptionPane.showMessageDialog(null, "Bill saved!");
 						}
-						JOptionPane.showMessageDialog(null, "Bill saved!");
 					}
 				} else {
 					JOptionPane.showMessageDialog(null, "All fields are mandatory");

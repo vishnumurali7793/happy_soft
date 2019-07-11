@@ -11,6 +11,7 @@ import com.happy.entities.PurchaseBean;
 import com.happy.entities.PurchaseProductMappingBean;
 import com.happy.entities.SalesBean;
 import com.happy.entities.SalesProductMappingBean;
+import com.happy.entities.StockBean;
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Chunk;
 import com.itextpdf.text.Document;
@@ -45,6 +46,7 @@ public class TransactionAction {
 	mainWindow mainWindow = new mainWindow();
 	SalesBean salesBean = new SalesBean();
 	Purchase purchase;
+	StockBean stockBean;
 
 	public List<ProductBean> getProductList() {
 		return transactionDao.getProductList();
@@ -362,16 +364,55 @@ public class TransactionAction {
 	}
 
 	public void savePurchaseProduct(PurchaseProductMappingBean purchProductMappingBean) {
-		if(purchProductMappingBean!=null) {
+		if (purchProductMappingBean != null) {
 			transactionDao.savePurchaseProduct(purchProductMappingBean);
 		}
 	}
 
 	public String saveDayBookEntry(DayBookBean dayBookBean) {
-		if(dayBookBean!=null) {
+		if (dayBookBean != null) {
 			transactionDao.saveDayBookEntry(dayBookBean);
 			return SUCCESS;
 		}
 		return null;
+	}
+
+	public void updateStock(Integer productId, Double quantity) {
+		if (productId > 0 && quantity > 0) {
+			transactionDao.updateStock(productId, quantity);
+		}
+
+	}
+
+	public ProductBean getProductByItemCode(String itemCode) {
+		return transactionDao.getProductByItemCode(itemCode);
+	}
+
+	public StockBean getStockByProductId(Integer productId) {
+		return transactionDao.getStockByProductId(productId);
+	}
+
+	public String updateStockAfterSales(Integer productId, Double quantity) {
+		stockBean = new StockBean();
+		Double updatedStock = 0.0;
+		if (productId != null && productId > 0) {
+			stockBean = transactionDao.getStockByProductId(productId);
+
+			if (stockBean != null && stockBean.getStock() == 0) {
+				JOptionPane.showMessageDialog(null, "Item not in stock, hence sale can not be done!");
+				return FAILED;
+			} else if (stockBean != null && stockBean.getStock() > 0 && stockBean.getStock() < quantity) {
+				JOptionPane.showMessageDialog(null, "Not enough item in the inventory!");
+				return FAILED;
+			} else if (stockBean != null && stockBean.getStock() < 0) {
+				JOptionPane.showMessageDialog(null, "Not enough item in the inventory!");
+				return FAILED;
+			} else if (stockBean != null && stockBean.getStock() > 0 && stockBean.getStock() > quantity) {
+				updatedStock = (stockBean.getStock() - quantity);
+				transactionDao.updateStock(productId, updatedStock);
+				return SUCCESS;
+			}
+		}
+		return FAILED;
 	}
 }

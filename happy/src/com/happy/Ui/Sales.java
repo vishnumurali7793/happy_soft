@@ -277,13 +277,15 @@ public class Sales extends JFrame {
 					itemCode = (String) model.getValueAt(i, 0);
 					quantity = Double.parseDouble(String.valueOf(model.getValueAt(i, 4)));
 					itemWiseTotal = Double.parseDouble(String.valueOf(model.getValueAt(i, 5)));
+					productBean = transactionAction.getProductByItemCode(itemCode);
 					spMappingBean.setSalesBillId(new SalesBean());
 					spMappingBean.getSalesBillId().setBillId(salesBean.getBillId());
-					productBean.setProductId(transactionAction.getProductIdByCode(itemCode));
-					spMappingBean.setProductId(productBean);
+					spMappingBean.setProductId(new ProductBean());
+					spMappingBean.getProductId().setProductId(productBean.getProductId());
 					spMappingBean.setProductTotalAmt(itemWiseTotal);
 					spMappingBean.setQuantity(quantity);
 					mapStatus = transactionAction.saveSalesProductMapping(spMappingBean);
+					mapStatus = transactionAction.updateStockAfterSales(productBean.getProductId(), spMappingBean.getQuantity());
 				}
 				transactionAction.generateSalesBill(salesBean, spMappingBean);
 				if (mapStatus.equals("success")) {

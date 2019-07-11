@@ -9,6 +9,7 @@ import javax.swing.border.TitledBorder;
 
 import com.happy.dao.MasterDao;
 import com.happy.entities.ProductBean;
+import com.happy.entities.StockBean;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -18,6 +19,7 @@ import javax.swing.JComboBox;
 import javax.swing.DefaultComboBoxModel;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.Color;
 
 public class AddProduct extends JFrame {
 
@@ -28,6 +30,8 @@ public class AddProduct extends JFrame {
 
 	MasterDao master = new MasterDao();
 	ProductBean productMaster = new ProductBean();
+	private JTextField txtOpeningStock;
+	private StockBean stock;
 
 	/**
 	 * Launch the application.
@@ -69,7 +73,7 @@ public class AddProduct extends JFrame {
 				dispose();
 			}
 		});
-		btnExit.setBounds(361, 357, 82, 25);
+		btnExit.setBounds(367, 400, 82, 25);
 		unit.add(btnExit);
 
 		JLabel lblProductId = new JLabel("Product ID");
@@ -138,6 +142,22 @@ public class AddProduct extends JFrame {
 					productMaster.setSellingUnit(sellingUnit.getSelectedItem().toString());
 					productMaster.setSellingPrice(Double.parseDouble(price.getText()));
 
+					if (txtOpeningStock.getText().equals("") || txtOpeningStock.getText().equals("0")) {
+						try {
+							productMaster.setOpeningStock(Double.parseDouble("0.0"));
+						} catch (NumberFormatException e1) {
+							e1.printStackTrace();
+						}
+					} else {
+						try {
+							productMaster.setOpeningStock(Double.parseDouble(txtOpeningStock.getText()));
+						} catch (NumberFormatException e1) {
+							JOptionPane.showMessageDialog(null, "Only numbers allowed");
+							e1.printStackTrace();
+							return;
+						}
+					}
+
 					char[] nameArray = productName.getText().toUpperCase().toCharArray();
 					int length = nameArray.length;
 
@@ -145,21 +165,53 @@ public class AddProduct extends JFrame {
 							.setProductCode("ITE" + productId.getText() + nameArray[0] + nameArray[1] + nameArray[2]
 									+ "-" + nameArray[length - 3] + nameArray[length - 2] + nameArray[length - 1]);
 
+					stock = new StockBean();
+					stock.setProductId(new ProductBean());
+					stock.getProductId().setProductId(productMaster.getProductId());
+
+					if (txtOpeningStock.getText().equals("") || txtOpeningStock.getText().equals("0")) {
+						try {
+							stock.setStock(Double.parseDouble("0.0"));
+						} catch (NumberFormatException e1) {
+							e1.printStackTrace();
+						}
+					} else {
+						try {
+							stock.setStock(Double.parseDouble(txtOpeningStock.getText()));
+						} catch (NumberFormatException e1) {
+							JOptionPane.showMessageDialog(null, "Only numbers allowed");
+							e1.printStackTrace();
+							return;
+						}
+					}
+
 					try {
 						master.addProduct(productMaster);
+						master.updateOpeningStock(stock);
 						JOptionPane.showMessageDialog(null, "Product saved");
 						productId.setText("");
 						productName.setText("");
 						sellingUnit.setSelectedIndex(0);
 						productCategory.setSelectedIndex(0);
 						price.setText("");
+						txtOpeningStock.setText("");
 					} catch (Exception ex) {
 						JOptionPane.showMessageDialog(null, ex.getMessage());
 					}
 				}
 			}
 		});
-		btnSave.setBounds(267, 357, 82, 25);
+		btnSave.setBounds(267, 400, 82, 25);
 		unit.add(btnSave);
+
+		JLabel lblOpeningStock = new JLabel("Opening stock");
+		lblOpeningStock.setForeground(Color.RED);
+		lblOpeningStock.setBounds(52, 336, 115, 15);
+		unit.add(lblOpeningStock);
+
+		txtOpeningStock = new JTextField();
+		txtOpeningStock.setBounds(267, 334, 124, 19);
+		unit.add(txtOpeningStock);
+		txtOpeningStock.setColumns(10);
 	}
 }

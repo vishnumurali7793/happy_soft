@@ -31,6 +31,9 @@ public class ProductBean {
 	@Column(name="sell_price")
 	private Double sellingPrice;
 	
+	@Column(name="opening_stock")
+	private Double openingStock;
+	
 	@Column(name="delete_status")
 	private String deleteStatus="N";
 	
@@ -88,6 +91,14 @@ public class ProductBean {
 
 	public void setProductCode(String productCode) {
 		this.productCode = productCode;
+	}
+
+	public Double getOpeningStock() {
+		return openingStock;
+	}
+
+	public void setOpeningStock(Double openingStock) {
+		this.openingStock = openingStock;
 	}
 	
 }

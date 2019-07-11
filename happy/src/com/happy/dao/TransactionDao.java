@@ -15,6 +15,7 @@ import com.happy.entities.PurchaseBean;
 import com.happy.entities.PurchaseProductMappingBean;
 import com.happy.entities.SalesBean;
 import com.happy.entities.SalesProductMappingBean;
+import com.happy.entities.StockBean;
 
 public class TransactionDao {
 
@@ -206,7 +207,7 @@ public class TransactionDao {
 			session.save(purchProductMappingBean);
 		} catch (Exception e) {
 			e.printStackTrace();
-		}finally {
+		} finally {
 			session.close();
 		}
 
@@ -218,12 +219,54 @@ public class TransactionDao {
 		session.beginTransaction();
 		try {
 			session.save(dayBookBean);
-		}catch(Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
-		}finally {
+		} finally {
 			session.close();
 		}
-		
+
+	}
+
+	public void updateStock(Integer productId, Double quantity) {
+		SessionFactory sessionFactory = new Configuration().configure().buildSessionFactory();
+		Session session = sessionFactory.openSession();
+		session.beginTransaction();
+
+		try {
+			session.createQuery("UPDATE StockBean SET stock=:quantity WHERE productId.productId=:productId")
+					.setParameter("quantity", quantity).setParameter("productId", productId).executeUpdate();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			session.close();
+		}
+
+	}
+
+	public ProductBean getProductByItemCode(String itemCode) {
+		SessionFactory sessionFactory = new Configuration().configure().buildSessionFactory();
+		Session session = sessionFactory.openSession();
+		session.beginTransaction();
+		try {
+			return (ProductBean) session.createQuery("FROM ProductBean WHERE productCode=:itemCode")
+					.setParameter("itemCode", itemCode).uniqueResult();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	public StockBean getStockByProductId(Integer productId) {
+		SessionFactory sessionFactory = new Configuration().configure().buildSessionFactory();
+		Session session = sessionFactory.openSession();
+		session.beginTransaction();
+		try {
+			return (StockBean) session.createQuery("From StockBean WHERE productId.productId=:productId")
+					.setParameter("productId", productId).uniqueResult();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 
 }
